@@ -1,0 +1,4 @@
+#!/bin/bash
+export REST_GATEWAY_URL=http://localhost:4001/graphql
+export DATA_STORE_URL=http://localhost:4002/graphql
+npm run dev

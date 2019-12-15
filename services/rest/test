@@ -1,0 +1,6 @@
+#!/bin/bash
+export AUTH_URL=http://54.89.60.167:31017/
+export GRID_URL=http://54.89.60.167:30625/
+export GAME_URL=http://localhost:8080/
+export PORT=4001
+npm run dev
