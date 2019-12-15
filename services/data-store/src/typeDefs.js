@@ -10,6 +10,7 @@ type Match {
 type Mutation {
   newMatch(winner: String, players: [String]) : Match
 }
+
 `
 
 module.exports = typeDefs

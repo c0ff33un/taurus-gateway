@@ -90,7 +90,7 @@ class GameAPI extends RESTDataSource {
     req.body = JSON.stringify(req.body);
   }
 
-  async newRoom(user) {
+  async newRoom() {
     return this.post(`room`);
   }
 
