@@ -58,6 +58,7 @@ input GridInput {
 }
 
 type Query {
+  user: User
   users: [User]
   grid(settings: GridInput): Grid
 }

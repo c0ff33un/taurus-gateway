@@ -1,0 +1,9 @@
+version: '3'
+services:
+  taurus-rest-gateway:
+    image: taurusgame/rest-gateway
+    environment:
+      - AUTH_URL=http://54.89.60.167:31017/
+      - GAME_URL=http://54.89.60.167:32648/gs
+    ports:
+      - 4001:4000

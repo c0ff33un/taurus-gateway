@@ -2,6 +2,9 @@ const { AuthenticationError } = require('apollo-server')
 
 const resolvers = {
   Query: {
+    user : async (_soure, _args, { dataSources }) => {
+      return dataSources.authAPI.user()
+    },
     users: () => [], 
     grid: async (_source, { settings }, { dataSources }) => {
       return dataSources.gridAPI.generateGrid(settings)
@@ -30,7 +33,6 @@ const resolvers = {
       return dataSources.gameAPI.newRoom()
     },
     roomSetup: async (_source, { room, seed, rows, cols }, { dataSources }) => {
-      console.log('Try Room Setup')
       const gridRes = await dataSources.gridAPI.generateGrid({seed,  cols, rows})
       const { matrix: grid, exit } = gridRes
       let begin = exit

@@ -27,7 +27,6 @@ class AuthAPI extends RESTDataSource {
     const status = res.status;
     let data = await res.json();
     if (jwt) {
-      console.log(jwt);
       data.jwt = jwt.split(" ")[1];
     }
     data.status = status;
@@ -35,9 +34,11 @@ class AuthAPI extends RESTDataSource {
   }
 
   async newUser(user) {
-    const data = await this.post(`signup`, { user });
-    console.log('the data', data)
-    return data;
+    return this.post(`signup`, { user });
+  }
+
+  async user() {
+    return this.get(`user`)
   }
 
   async confirmation(token) {
@@ -54,9 +55,7 @@ class AuthAPI extends RESTDataSource {
   }
 
   async resendConfirmation(email) {
-    console.log(email);
     const data = await this.get(`confirmation/new/`, { user: { email } });
-    console.log(data);
     return data;
   }
 
@@ -67,8 +66,6 @@ class AuthAPI extends RESTDataSource {
 
   async guest() {
     const data = await this.post(`guests`);
-    console.log('the data changed', data)
-    console.log('please')
     return { user: data, jwt: data.jwt };
   }
 
@@ -90,7 +87,6 @@ class GameAPI extends RESTDataSource {
     if (this.context.token) {
       req.headers.set("Authorization", this.context.token);
     }
-    console.log("the req", req);
     req.body = JSON.stringify(req.body);
   }
 
@@ -99,9 +95,7 @@ class GameAPI extends RESTDataSource {
   }
 
   async setupRoom(room, settings) {
-    const data = await this.put(`room/setup/${room}`, settings);
-    console.log(data);
-    return data;
+    return this.put(`room/setup/${room}`, settings);
   }
 
   async startRoom(room) {
