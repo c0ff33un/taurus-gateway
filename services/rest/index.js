@@ -1,224 +1,161 @@
-const { ApolloServer, gql, AuthenticationError } = require('apollo-server')
-const { buildFederatedSchema } = require('@apollo/federation')
-
-const typeDefs = gql`
-type User {
-    id: Int
-    handle: String
-    email: String
-    guest: Boolean
-}
-
-type Query {
-  users: [User]
-}
-
-input UserInput {
-    handle: String
-    email: String
-    password: String
-}
-
-type LoggedUser {
-    user: User
-    jwt: String
-}
-
-
-type LogoutMsg {
-    msg: String
-}
-
-input UserLogin {
-    email: String!
-    password: String!
-}
-
-type Room {
-    id: String!
-}
-
-type Exit {
-    x: Int!
-    y: Int!
-}
-
-type Dimension {
-    w: Int!
-    h: Int!
-}
-
-type Grid {
-    seed: Int!
-    matrix: [Boolean]!
-    exit: Exit!
-    size: Dimension!
-}
-
-input GridInput {
-    seed: Int
-    w: Int
-    h: Int
-}
-
-type Mutation {
-  signup(user: UserInput): User
-  login(user: UserLogin): LoggedUser
-  confirmation(token: String): User
-  guest: LoggedUser
-  logout: LogoutMsg
-  room: Room
-  grid(settings: GridInput): Grid
-}
-
-`
-
-const { RESTDataSource } = require('apollo-datasource-rest')
+const {
+  ApolloServer,
+  AuthenticationError,
+  UserInputError
+} = require("apollo-server");
+const { buildFederatedSchema } = require("@apollo/federation");
+const { RESTDataSource } = require("apollo-datasource-rest");
+const typeDefs = require("./typeDefs");
+const resolvers = require("./resolvers");
 
 class AuthAPI extends RESTDataSource {
   constructor() {
-    super()
-    this.baseURL = process.env.AUTH_URL
+    super();
+    this.baseURL = process.env.AUTH_URL;
   }
 
   willSendRequest(req) {
     if (this.context.token) {
-      req.headers.set('Authorization', this.context.token)
+      req.headers.set("Authorization", this.context.token);
     }
-    req.headers.set('Content-Type', 'application/json')
-    req.body = JSON.stringify(req.body)
+    req.headers.set("Content-Type", "application/json");
+    req.body = JSON.stringify(req.body);
   }
 
-  async didReceiveResponse(res) {
-    const jwt = res.headers.get('Authorization')
-    let data = await res.json()
+  async didReceiveResponse(res, req) {
+    const jwt = res.headers.get("Authorization");
+    const status = res.status;
+    let data = await res.json();
     if (jwt) {
-      console.log(jwt)
-      data.jwt = jwt.split(" ")[1]
+      console.log(jwt);
+      data.jwt = jwt.split(" ")[1];
     }
-    return data
+    data.status = status;
+    return data;
   }
 
-  async newUser(user) { 
-    const data = await this.post(`signup`, { user }) 
-    console.log(data)
-    return data
+  async newUser(user) {
+    const data = await this.post(`signup`, { user });
+    return data;
   }
 
   async confirmation(token) {
-    const data = await this.get(`confirmation?confirmation_token=${token}`)
-    console.log('data', data)
-    return data
+    const data = await this.get(`confirmation?confirmation_token=${token}`);
+    const status = data.status;
+    if (status === 422) {
+      if (data.confirmation_token) {
+        return new UserInputError("Token is Invalid");
+      } else {
+        return new Error("Internal Server Error");
+      }
+    }
+    return data;
   }
-  
-  async login(user) { 
-    const data = await this.post(`login`, { user }) 
-    return { user: data, jwt: data.jwt }
+
+  async resendConfirmation(email) {
+    console.log(email);
+    const data = await this.get(`confirmation/new/`, { user: { email } });
+    console.log(data);
+    return data;
+  }
+
+  async login(user) {
+    const data = await this.post(`login`, { user });
+    return { user: data, jwt: data.jwt };
   }
 
   async guest() {
-    const data  = await this.post(`guests`)
-    return { user: data, jwt: data.jwt }
+    const data = await this.post(`guests`);
+    return { user: data, jwt: data.jwt };
   }
 
   async logout() {
     if (!this.context.token) {
-      throw new AuthenticationError('must authenticate')
+      throw new AuthenticationError("must authenticate");
     }
-    return this.delete(`logout`)
+    return this.delete(`logout`);
   }
 }
 
 class GameAPI extends RESTDataSource {
   constructor() {
-    super()
-    this.baseURL = process.env.GAME_URL
+    super();
+    this.baseURL = process.env.GAME_URL;
   }
 
   willSendRequest(req) {
     if (this.context.token) {
-      req.headers.set('Authorization', this.context.token)
+      req.headers.set("Authorization", this.context.token);
     }
-    req.body = JSON.stringify(req.body)
+    console.log("the req", req);
+    req.body = JSON.stringify(req.body);
   }
 
-  async newRoom(user) { 
-    const data = await this.post(`room`) 
-    console.log(data)
-    return data
+  async newRoom(user) {
+    return this.post(`room`);
+  }
+
+  async setupRoom(room, settings) {
+    const data = await this.put(`room/setup/${room}`, settings);
+    console.log(data);
+    return data;
+  }
+
+  async startRoom(room) {
+    return this.put(`room/start/${room}`);
   }
 }
 
 class GridAPI extends RESTDataSource {
   constructor() {
-    super()
-    this.baseURL = process.env.GRID_URL
+    super();
+    this.baseURL = process.env.GRID_URL;
   }
 
   willSendRequest(req) {
     if (this.context.token) {
-      req.headers.set('Authorization', this.context.token)
+      req.headers.set("Authorization", this.context.token);
     }
-    req.body = JSON.stringify(req.body)
+    req.body = JSON.stringify(req.body);
   }
 
-  async generateGrid(settings) { 
-    const data = await this.get(`grid?seed=${settings.seed}${settings.w?`&width=${settings.w}`:""}${settings.h?`&height=${settings.h}`:""}`) 
-    console.log(data)
-    const matrix = []
+  async generateGrid(settings) {
+    const data = await this.get(
+      `grid?seed=${settings.seed}&width=${settings.cols}&height=${
+        settings.rows
+      }`
+    );
+    const matrix = [];
     data.matrix.forEach(row => {
       row.forEach(item => {
-        matrix.push(item)
-      })
-    })
-    return { seed: settings.seed, matrix, exit: { x: data.exit.first, y: data.exit.second }, size : { w: data.m, h: data.n } }
+        matrix.push(item);
+      });
+    });
+    return {
+      seed: settings.seed,
+      matrix,
+      exit: { x: data.exit.first, y: data.exit.second },
+      size: { cols: data.m, rows: data.n }
+    };
   }
 }
 
-const resolvers = {
-  Query: {
-    users: () => [], 
-  },
-  Mutation: {
-    signup: async (_source, { user }, { dataSources }) => {
-      return dataSources.authAPI.newUser(user)
-    },
-    confirmation: async (_source, { token }, {dataSources}) => {
-      return dataSources.authAPI.confirmation(token)
-    },
-    login: async (_source, { user }, { dataSources }) => {
-      return dataSources.authAPI.login(user)
-    },
-    logout: async (_source, _args, { dataSources }) => {
-      return dataSources.authAPI.logout()
-    },
-    guest: async (_source, _args, { dataSources }) => {
-      return dataSources.authAPI.guest()
-    },
-    room: async (_source, _args, { dataSources }) => {
-      return dataSources.gameAPI.newRoom()
-    },
-    grid: async (_source, { settings }, { dataSources }) => {
-      return dataSources.gridAPI.generateGrid(settings)
-    },
-  }
-};
-
-const server = new ApolloServer({ 
+const server = new ApolloServer({
   schema: buildFederatedSchema([{ typeDefs, resolvers }]),
   dataSources: () => {
     return {
       authAPI: new AuthAPI(),
       gameAPI: new GameAPI(),
-      gridAPI: new GridAPI(),
-    }
+      gridAPI: new GridAPI()
+    };
   },
   context: ({ req }) => {
-    const token = req.headers.authorization || ''
-    return { token }
+    const token = req.headers.authorization || "";
+    return { token };
   }
-})
+});
 
-server.listen().then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-}) 
+console.log(process.env.PORT);
+server.listen(process.env.PORT || 4000).then(({ url }) => {
+  console.log(`Server ready at ${url}`);
+});
