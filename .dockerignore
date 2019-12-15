@@ -1,2 +1,4 @@
-services/
-node_modules/
+services
+node_modules
+Dockerfile
+README.md

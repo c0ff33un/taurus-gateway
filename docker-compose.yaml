@@ -1,0 +1,22 @@
+version: '3'
+services:
+  taurus-data-store-db:
+    image: mongo
+    ports:
+      - 27017:27017
+  taurus-data-store:
+    image: taurusgame/data-store-ms
+    environment: 
+      - MONGO_URL=mongodb://taurus-data-store-db:27017
+  taurus-rest-gateway:
+    image: taurusgame/rest-gateway
+    environment:
+      - AUTH_URL=http://54.89.60.167:31017/
+      - GAME_URL=http://54.89.60.167:32648/gs
+  taurus-gateway:
+    image: taurusgame/gateway
+    ports:
+      - 4000:4000
+    environment:
+      - DATA_STORE_URL=http://taurus-data-store:4000/graphql
+      - REST_GATEWAY_URL=http://taurus-rest-gateway:4000/graphql

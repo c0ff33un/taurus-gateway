@@ -6,9 +6,10 @@ COPY package-lock.json /taurus-api/
 
 WORKDIR /taurus-api/
 
-RUN npm install
+RUN npm install --no-optional && npm cache clean --force
 
 COPY . /taurus-api/
 
-ENTRYPOINT ["node", "index.js"]
+RUN NODE_ENV=production npm run build
 
+ENTRYPOINT ["node", "dist/server"]

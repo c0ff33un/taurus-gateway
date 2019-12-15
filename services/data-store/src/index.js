@@ -12,7 +12,6 @@ const server = new ApolloServer({
   }
 })
 
-
 mongoose.connection.once('open', (url) => {
     console.log('conneted to database', url);
 });
@@ -22,3 +21,9 @@ server.listen(process.env.PORT || 4000).then(({ url }) => {
   const mongoURL = process.env.MONGO_URL || 'mongodb://localhost:27017'
   mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
 }) 
+
+if (module.hot) {
+  module.hot.accept()
+  module.hot.dispose(() => server.stop())
+}
+

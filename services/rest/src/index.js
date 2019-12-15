@@ -158,12 +158,9 @@ const server = new ApolloServer({
   }
 });
 
-
-console.log(process.env.PORT);
 server.listen(process.env.PORT || 4000).then(({ url }) => {
   console.log(`Server ready at ${url}`);
 });
-
 
 if (module.hot) {
   module.hot.accept()

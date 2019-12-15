@@ -1,4 +1,4 @@
-FROM node:12.7.0-alpine as builder
+FROM node:12.7.0-alpine
 
 COPY package.json /taurus-api/
 
@@ -9,5 +9,7 @@ WORKDIR /taurus-api/
 RUN npm install --no-optional && npm cache clean --force
 
 COPY . /taurus-api/
+
+RUN NODE_ENV=production npm run build
 
 ENTRYPOINT ["node", "dist/server"]

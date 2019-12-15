@@ -3,8 +3,8 @@ const { ApolloGateway } = require("@apollo/gateway");
 
 const gateway = new ApolloGateway({
   serviceList: [
-    { name: "rest", url: "http://localhost:4001/graphql" },
-    { name: "data-store", url: "http://localhost:4002/graphql" }
+    { name: "rest", url:  process.env.REST_GATEWAY_URL },
+    { name: "data-store", url: process.env.DATA_STORE_URL }
   ]
 });
 
@@ -16,4 +16,11 @@ const gateway = new ApolloGateway({
   server.listen().then(({ url }) => {
     console.log(`🚀 Server ready at ${url}`);
   });
+
+  if (module.hot) {
+    module.hot.accept()
+    module.hot.dispose(() => server.stop())
+  }
+
+
 })();
