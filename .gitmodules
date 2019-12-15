@@ -1,3 +1,0 @@
-[submodule "services/taurus-data-store-ms"]
-	path = services/taurus-data-store-ms
-	url = https://github.com/c0ff33un/taurus-data-store-ms.git

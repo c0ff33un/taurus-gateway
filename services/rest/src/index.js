@@ -36,6 +36,7 @@ class AuthAPI extends RESTDataSource {
 
   async newUser(user) {
     const data = await this.post(`signup`, { user });
+    console.log('the data', data)
     return data;
   }
 
@@ -66,6 +67,8 @@ class AuthAPI extends RESTDataSource {
 
   async guest() {
     const data = await this.post(`guests`);
+    console.log('the data changed', data)
+    console.log('please')
     return { user: data, jwt: data.jwt };
   }
 
@@ -155,7 +158,14 @@ const server = new ApolloServer({
   }
 });
 
+
 console.log(process.env.PORT);
 server.listen(process.env.PORT || 4000).then(({ url }) => {
   console.log(`Server ready at ${url}`);
 });
+
+
+if (module.hot) {
+  module.hot.accept()
+  module.hot.dispose(() => server.stop())
+}
