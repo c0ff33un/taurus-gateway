@@ -5,8 +5,9 @@ const resolvers = {
   Query: {
     matches: () => [],
   },
-  Mutation: {
-    newMatch: async (_source, { winner, players }) => {
+  Mutation: {  
+    newMatch: async (_source, { winner, players }, { dataSources }) => {
+      dataSources.statsAPI.updateCounters(winner, players)
       return MatchModel.create({ winner, players })
     },
   }

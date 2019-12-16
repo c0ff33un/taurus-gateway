@@ -3,12 +3,12 @@ const { gql } = require('apollo-server')
 const typeDefs = gql`
 type Match {
   id: ID!
-  players: [String]
-  winner: String
+  players: [Int]
+  winner: Int
 }
 
 type Mutation {
-  newMatch(winner: String, players: [String]) : Match
+  newMatch(winner: Int, players: [Int]) : Match
 }
 
 `

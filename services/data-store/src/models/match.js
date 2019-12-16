@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const matchSchema = new Schema({
-  winner: String,
-  players: [String]
+  winner: Number,
+  players: [Number]
 });
 
 module.exports = mongoose.model('Match', matchSchema);
