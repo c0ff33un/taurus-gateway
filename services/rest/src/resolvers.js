@@ -1,6 +1,11 @@
 const { AuthenticationError } = require('apollo-server')
 
 const resolvers = {
+  User: {
+    __resolveReference(reference) {
+      return fetchUserById(reference.id)
+    }
+  },
   Query: {
     message: () => { return 'Hello World' },
     user : async (_soure, _args, { dataSources }) => {

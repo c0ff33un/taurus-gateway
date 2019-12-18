@@ -55,8 +55,13 @@ class AuthAPI extends RESTDataSource {
   }
 
   async resendConfirmation(email) {
+<<<<<<< HEAD
     const data = await this.get(`confirmation/new/`, { user: { email } })
     return data
+=======
+    const data = await this.post(`resend_confirmation/`, { user: { email } });
+    return data;
+>>>>>>> 864100708fbef101e320c2dfa8c1b20098f55291
   }
 
   async login(user) {

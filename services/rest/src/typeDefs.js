@@ -1,8 +1,8 @@
 const { gql } = require('apollo-server')
 
 const typeDefs = gql`
-type User {
-  id: Int
+type User @key(fields: "id") {
+  id: ID!
   handle: String
   email: String
   guest: Boolean
