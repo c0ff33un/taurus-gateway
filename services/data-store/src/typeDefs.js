@@ -5,10 +5,11 @@ type Match {
   id: ID!
   players: [String]
   winner: String
+  resolveTime: Float
 }
 
 type Mutation {
-  newMatch(winner: String, players: [String]) : Match
+  newMatch(winner: String, players: [String], resolveTime: Int) : Match
 }
 
 `

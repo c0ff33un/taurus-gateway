@@ -3,7 +3,8 @@ const Schema = mongoose.Schema;
 
 const matchSchema = new Schema({
   winner: String,
-  players: [String]
+  players: [String],
+  resolveTime: Number
 });
 
 module.exports = mongoose.model('Match', matchSchema);

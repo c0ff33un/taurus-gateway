@@ -2,6 +2,7 @@ const { AuthenticationError } = require('apollo-server')
 
 const resolvers = {
   Query: {
+    message: () => { return 'Hello World' },
     user : async (_soure, _args, { dataSources }) => {
       return dataSources.authAPI.user()
     },

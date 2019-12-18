@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.$NODE_ENV.js",
     "start": "node dist/server",
-    "dev": "NODE_ENV=development npm run build & npm start"
+    "dev": "npm start & NODE_ENV=development npm run build"
   },
   "keywords": [],
   "author": "",
@@ -25,5 +25,11 @@
     "webpack-cli": "^3.3.10",
     "webpack-merge": "^4.2.2",
     "webpack-node-externals": "^1.7.2"
+  }, 
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true
   }
 }

@@ -1,3 +1,4 @@
 #!/bin/bash
 export PORT=4002
+export STATS_URL=http://18.206.81.12:30495
 npm run dev

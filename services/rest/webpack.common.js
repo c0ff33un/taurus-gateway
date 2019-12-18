@@ -4,7 +4,7 @@ module.exports = {
   module: {
     rules: [
       {
-        exclude: [path.resolve(__dirname, 'node_modules')],
+        exclude: [path.resolve(__dirname, './node_modules')],
         test: /\.js$/,
       }
     ]

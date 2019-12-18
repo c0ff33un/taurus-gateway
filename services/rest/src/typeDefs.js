@@ -58,6 +58,7 @@ input GridInput {
 }
 
 type Query {
+  message: String
   user: User
   users: [User]
   grid(settings: GridInput): Grid
@@ -75,4 +76,5 @@ type Mutation {
   roomStart(room: String): Room
 }
 `
+
 module.exports = typeDefs
