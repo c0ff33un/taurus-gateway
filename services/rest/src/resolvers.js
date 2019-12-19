@@ -1,16 +1,14 @@
-const { AuthenticationError } = require('apollo-server')
-
 const resolvers = {
-  User: {
-    __resolveReference(reference) {
-      return fetchUserById(reference.id)
+  Player: {
+    __resolveReference(reference, _args, { dataSources }) {
+      return dataSources.authAPI.fetchUserById(reference.id)
     }
   },
   Query: {
-    message: () => { return 'Hello World' },
-    user : async (_soure, _args, { dataSources }) => {
+    me: async (_source, _args, { dataSources }) => {
       return dataSources.authAPI.user()
     },
+    message: () => { return 'Hello World' },
     users: () => [], 
     grid: async (_source, { settings }, { dataSources }) => {
       return dataSources.gridAPI.generateGrid(settings)
@@ -20,10 +18,10 @@ const resolvers = {
     signup: async (_source, { user }, { dataSources }) => {
       return dataSources.authAPI.newUser(user)
     },
-    confirmation: async (_source, { token }, { dataSources }) => {
+    confirmAccount: async (_source, { token }, { dataSources }) => {
       return dataSources.authAPI.confirmation(token)
     },
-    resendConfirmation: async (_source, { email }, { dataSources }) => {
+    resendAccountConfirmation: async (_source, { email }, { dataSources }) => {
       return dataSources.authAPI.resendConfirmation(email)
     },
     login: async (_source, { user }, { dataSources }) => {
@@ -55,7 +53,7 @@ const resolvers = {
           }
         }
       }
-      const settings = { rows, cols, grid, exit, begin }
+      const settings = { rows, cols, grid, exit: {x: exit.y, y: exit.x}, begin }
       return dataSources.gameAPI.setupRoom(room, settings)
     },
     roomStart: async (_source, { room }, { dataSources }) => {

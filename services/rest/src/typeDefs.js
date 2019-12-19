@@ -1,7 +1,7 @@
 const { gql } = require('apollo-server')
 
 const typeDefs = gql`
-type User @key(fields: "id") {
+type Player @key(fields: "id") {
   id: ID!
   handle: String
   email: String
@@ -9,14 +9,14 @@ type User @key(fields: "id") {
 }
 
 
-input UserInput {
+input PlayerInput {
   handle: String
   email: String
   password: String
 }
 
-type LoggedUser {
-  user: User
+type LoggedPlayer {
+  user: Player 
   jwt: String
 }
 
@@ -25,7 +25,7 @@ type LogoutMsg {
   msg: String
 }
 
-input UserLogin {
+input PlayerLogin {
   email: String!
   password: String!
 }
@@ -58,18 +58,19 @@ input GridInput {
 }
 
 type Query {
+  me: Player
   message: String
-  user: User
-  users: [User]
+  user: Player
+  users: [Player]
   grid(settings: GridInput): Grid
 }
 
 type Mutation {
-  signup(user: UserInput): User
-  login(user: UserLogin): LoggedUser
-  confirmation(token: String): User
-  resendConfirmation(email: String): User
-  guest: LoggedUser
+  signup(user: PlayerInput): Player
+  confirmAccount(token: String): Player
+  resendAccountConfirmation(email: String): Player
+  login(user: PlayerLogin): LoggedPlayer
+  guest: LoggedPlayer
   logout: LogoutMsg
   room: Room
   roomSetup(room: String, seed: Int, rows: Int, cols: Int): Room
