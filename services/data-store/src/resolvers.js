@@ -34,7 +34,7 @@ const resolvers = {
         }
       }
       console.log('options:', options)
-      return fetch(`${statsUrl}user`, options)
+      return fetch(`${statsUrl}match`, options)
       .then(res => {
         console.log('res', res)
         return res.json()
