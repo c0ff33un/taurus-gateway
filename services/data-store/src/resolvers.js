@@ -1,14 +1,14 @@
-const { AuthenticationError } = require('apollo-server')
+const { AuthenticationError,  } = require('apollo-server')
 const MatchModel = require('./models/match')
 const fetch = require('node-fetch')
 
 const resolvers = {
   Match: {
     winner(match) {
-      return { __typename: "Player", upc: match.winner }
+      return { __typename: "Player", id: match.winner }
     },
     players(match) {
-      return { __typename: "[Player]", upc: match.players }
+      return { __typename: "[Player]", id: match.players }
     }
   },
   Query: {
@@ -27,14 +27,14 @@ const resolvers = {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: {
+        body: JSON.stringify({
           users: players.map(e => parseInt(e)),
           time: resolveTime,
           winner: parseInt(winner),
-        }
+        })
       }
       console.log('options:', options)
-      return fetch(`${statsUrl}user`, options)
+      return fetch(`${statsUrl}`, options)
       .then(res => {
         console.log('res', res)
         return res.json()
