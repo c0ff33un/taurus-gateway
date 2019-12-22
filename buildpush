@@ -1,0 +1,3 @@
+#!/bin/bash
+docker build -t taurusgame/gateway .
+docker push taurusgame/gateway

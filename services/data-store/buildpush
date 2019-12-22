@@ -1,0 +1,3 @@
+#!/bin/bash
+docker build -t taurusgame/data-store-ms .
+docker push taurusgame/data-store-ms

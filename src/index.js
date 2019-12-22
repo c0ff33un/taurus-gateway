@@ -5,16 +5,21 @@ import { getUserId } from './auth'
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({ request, context }) {
     const { token, userId, unAuthenticated } = context
+    if (token != '') {
+      request.http.headers.set('Authorization', token)
+    }
+    if (process.env.NO_AUTH) {
+      return
+    }
     if (unAuthenticated) {
       return
     }
-    request.http.headers.set('Authorization', token)
     request.http.headers.set('user-id', userId)
   }
 
   async didReceiveResponse(req) {
     const json = await req.json()
-    console.log(json)
+    console.log('response data:', json)
     return json
   }
 }
@@ -42,11 +47,15 @@ const server = new ApolloServer({
   subscriptions: false,
   context: async ({ req }) => {
     const query = gql(req.body.query)
+    console.log('request body:', req.body.query)
     const queryName = query.definitions[0].selectionSet.selections[0].name.value
+    const token = req.headers.authorization || ''
+    if (process.env.NO_AUTH !== undefined) {
+      return { unAuthenticated: true, token }
+    }
     if (unAuthenticated.includes(queryName)) {
       return { unAuthenticated: true }
     }
-    const token = req.headers.authorization || ''
     const json = await getUserId(token)
     const userId = json.data.me.id
     if  (!userId) throw new AuthenticationError('you must be logged in')

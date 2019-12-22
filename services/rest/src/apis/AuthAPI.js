@@ -10,7 +10,6 @@ class AuthAPI extends RESTDataSource {
   willSendRequest(req) {
     if (this.context.token) {
       req.headers.set('Authorization', this.context.token)
-      console.log(this.context.token)
     }
     req.headers.set('Content-Type', 'application/json')
     req.body = JSON.stringify(req.body)

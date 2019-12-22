@@ -1,3 +1,20 @@
+function findBeginDFS(grid, dist) {
+  let begin = exit
+  let currentDistance = 0
+  for (let x = 0; x < rows; ++x) {
+    for (let y = 0; y < cols; ++y) {
+      let pos = x * cols + y
+      if (grid[pos] === false) {
+        let manhattanDistance = Math.abs(x - exit.x) + Math.abs(y - exit.y)
+        if (manhattanDistance > currentDistance) {
+          currentDistance = manhattanDistance
+          begin = { x, y }
+        }
+      }
+    }
+  }
+}
+
 const resolvers = {
   Player: {
     __resolveReference(reference, _args, { dataSources }) {
@@ -53,7 +70,7 @@ const resolvers = {
           }
         }
       }
-      const settings = { rows, cols, grid, exit: {x: exit.y, y: exit.x}, begin }
+      const settings = { rows, cols, grid, exit, begin }
       return dataSources.gameAPI.setupRoom(room, settings)
     },
     roomStart: async (_source, { room }, { dataSources }) => {

@@ -2,6 +2,6 @@
 export AUTH_URL=http://18.206.81.12:32375/
 export GRID_URL=http://18.206.81.12:30913/
 #export GAME_URL=http://18.206.81.12:31016/
-export GAME_URL=http://localhost:3030/
+export GAME_URL=http://localhost:3030/gs
 export PORT=4001
 npm run dev
