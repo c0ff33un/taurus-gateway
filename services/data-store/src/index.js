@@ -11,9 +11,9 @@ class StatsAPI extends RESTDataSource{
     this.baseURL = process.env.STATS_URL
   }
 
-  async updateCounters(winner, players) {
+  async updateCounters(winner, players, time) {
     console.log('INSIDE DATASOURCE')
-    const data = await this.post('user', { "winner": winner, "users": players })
+    const data = await this.post('user', { "winner": winner, "users": players, "time": time})
     return data
   }
 }
