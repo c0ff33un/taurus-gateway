@@ -1,4 +1,4 @@
-import { RESTDataSource } from 'apollo-datasource-rest'
+import { RESTDataSource, RequestOptions } from 'apollo-datasource-rest'
 
 class GridAPI extends RESTDataSource {
   constructor() {
@@ -6,22 +6,22 @@ class GridAPI extends RESTDataSource {
     this.baseURL = process.env.GRID_URL
   }
 
-  willSendRequest(req) {
+  willSendRequest(req: RequestOptions) {
     if (this.context.token) {
       req.headers.set('Authorization', this.context.token)
     }
     req.body = JSON.stringify(req.body)
   }
 
-  async generateGrid(settings) {
+  async generateGrid(settings: any) {
     const data = await this.get(
       `grid?seed=${settings.seed}&width=${settings.cols}&height=${
         settings.rows
       }`
     )
-    const matrix = []
-    data.matrix.forEach(row => {
-      row.forEach(item => {
+    const matrix: any[] = []
+    data.matrix.forEach((row: any) => {
+      row.forEach((item: any) => {
         matrix.push(item)
       })
     })

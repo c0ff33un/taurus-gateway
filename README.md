@@ -2,6 +2,7 @@
 
 ## Hacking Instructions
 
-1. npm install ( and npm i -g webpack webpack-cli if your shell doesn't resolve webpack )
-2. NODE_ENV=development npm run build && npm run start
+1. npm install
+2. npm start
 3. Enjoy Apollo Development with Hot Reload!
+4. type rs\n if HMR dies

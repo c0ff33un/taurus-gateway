@@ -1,4 +1,4 @@
-import { RESTDataSource } from 'apollo-datasource-rest'
+import { RESTDataSource, RequestOptions } from 'apollo-datasource-rest'
 
 class GameAPI extends RESTDataSource {
   constructor() {
@@ -6,7 +6,7 @@ class GameAPI extends RESTDataSource {
     this.baseURL = process.env.GAME_URL
   }
 
-  willSendRequest(req) {
+  willSendRequest(req: RequestOptions) {
     if (this.context.token) {
       req.headers.set('Authorization', this.context.token)
     }
@@ -17,11 +17,11 @@ class GameAPI extends RESTDataSource {
     return this.post(`room`)
   }
 
-  async setupRoom(room, settings) {
+  async setupRoom(room: string, settings: any) {
     return this.put(`room/${room}/setup`, settings)
   }
 
-  async startRoom(room) {
+  async startRoom(room: string) {
     return this.put(`room/${room}/start`)
   }
 }

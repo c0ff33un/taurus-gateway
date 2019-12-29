@@ -15,6 +15,10 @@ module.exports = merge.smart(common, {
     })
   ],
   mode: 'development',
-  plugins: [new CleanWebpackPlugin(), new webpack.HotModuleReplacementPlugin()],
+  plugins: [
+    new CleanWebpackPlugin(), 
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+  ],
   watch: true
 });

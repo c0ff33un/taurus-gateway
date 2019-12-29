@@ -1,0 +1,9 @@
+FROM node:12.7.0-alpine
+
+COPY package.json package-lock.json /rest-gateway/
+
+WORKDIR /rest-gateway/
+
+RUN npm install --no-optional && npm cache clean --force
+
+CMD ["npm", "start"]

@@ -10,6 +10,6 @@ RUN npm install --no-optional && npm cache clean --force
 
 COPY . /taurus-api/
 
-RUN NODE_ENV=production npm run build
+RUN npm run build
 
 ENTRYPOINT ["node", "dist/server"]

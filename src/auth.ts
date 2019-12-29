@@ -6,8 +6,9 @@ import fetch from 'node-fetch'
 const uri = process.env.REST_GATEWAY_URL
 const link = new HttpLink({ uri, fetch })
 
-
+/*
 export function getUserId(token) {
+  asasd
   if (token == '') {
     return null
   }
@@ -20,4 +21,4 @@ export function getUserId(token) {
   return makePromise(execute(link, operation))
 }
 
-
+ */

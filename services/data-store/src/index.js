@@ -12,7 +12,6 @@ class StatsAPI extends RESTDataSource{
   }
 
   async updateCounters(winner, players, time) {
-    console.log('INSIDE DATASOURCE')
     const data = await this.post('user', { "winner": winner, "users": players, "time": time})
     return data
   }
@@ -32,17 +31,26 @@ const server = new ApolloServer({
 })
 
 mongoose.connection.once('open', (url) => {
-    console.log('conneted to database', url);
+    console.log('connected to database', url);
 });
 
-server.listen(process.env.PORT || 4000).then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-  const mongoURL = process.env.MONGO_URL || 'mongodb://localhost:27017'
-  mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
-}) 
+let retries = 0
 
-if (module.hot) {
-  module.hot.accept()
-  module.hot.dispose(() => server.stop())
+function connectWithRetry() {
+  if (retries === 3) {
+    throw new Error("Database service unavailable")
+  }
+  const mongoURL = process.env.MONGO_URL || 'mongodb://localhost:27017'
+  return mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true }, function(err) {
+    if (err) {
+      console.error('Failed to connect with db, retrying in 5 seconds', err)
+      setTimeout(connectWithRetry, 5000)
+      retries += 1
+    }
+  })
 }
 
+server.listen(process.env.PORT || 4000).then(({ url }) => {
+  console.log(`Server ready att ${url}`)
+  connectWithRetry()
+}) 

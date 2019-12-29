@@ -1,3 +1,3 @@
 #!/bin/bash
-docker build -t taurusgame/rest-gateway .
+docker build -t taurusgame/rest-gateway -f Dockerfile .
 docker push taurusgame/rest-gateway

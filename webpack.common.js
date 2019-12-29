@@ -5,7 +5,8 @@ module.exports = {
     rules: [
       {
         exclude: [path.resolve(__dirname, 'node_modules')],
-        test: /\.js$/,
+        test: /\.ts$/,
+        use: 'ts-loader'
       }
     ]
   },
@@ -14,7 +15,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist')
   },
   resolve: {
-    extensions: ['.js']
+    extensions: ['.ts', '.js']
   },
   target: 'node'
 }

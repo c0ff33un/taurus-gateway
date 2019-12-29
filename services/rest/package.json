@@ -6,9 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config webpack.$NODE_ENV.js",
-    "start": "node dist/server",
-    "dev": "npm start & NODE_ENV=development npm run build"
+    "build": "webpack --config webpack.production.js",
+    "start": "nodemon dist/server.js & webpack --config webpack.development.js"
   },
   "keywords": [],
   "author": "",
@@ -17,11 +16,18 @@
     "@apollo/federation": "^0.11.2",
     "apollo-datasource-rest": "^0.6.9",
     "apollo-server": "^2.9.13",
+    "apollo-server-types": "^0.2.9",
     "graphql": "^14.5.8"
   },
   "devDependencies": {
+    "@types/webpack-env": "^1.14.1",
+    "@typescript-eslint/eslint-plugin": "^2.13.0",
+    "@typescript-eslint/parser": "^2.13.0",
     "clean-webpack-plugin": "^3.0.0",
     "eslint": "^6.7.2",
+    "nodemon": "^2.0.2",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.4",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "webpack-merge": "^4.2.2",
