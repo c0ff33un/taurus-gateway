@@ -1,4 +1,4 @@
-import { ApolloServer } from 'apollo-server-express'
+import { ApolloServer, AuthenticationError } from 'apollo-server-express'
 import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway'
 
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
@@ -56,13 +56,20 @@ const server = new ApolloServer({
           const queryName = selection.name.value
           if (unAuthenticated.includes(queryName)) {
             requestContext.context.unAuthenticated = false
+            return
+          }
+          console.log("queryName: ", queryName)
+          console.log("token: ", requestContext.context.token)
+          if (!requestContext.context.token) {
+            throw new AuthenticationError("Must be logged in")
           }
         },
         willSendResponse(requestContext: any) {
           const context = requestContext.context
           if (context.login) {
             const { token } = context
-            requestContext.response.http.headers.set('set-cookie', `token=${token}; SameSite=Strict; HttpOnly`)
+            console.log('Setting cookie token: ', token)
+            requestContext.response.http.headers.set('Set-Cookie', `token=${token}; SameSite=Strict; HttpOnly`)
           }
         }
       }

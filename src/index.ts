@@ -4,13 +4,23 @@ import server from './server'
 const cookieParser = require('cookie-parser')
 
 const app = express()
-app.use(cookieParser())
+// This was setting cors for OPTIONS but not for the actual response ¯\_(ツ)_/¯
+/*
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: true,
   credentials: true,
 }
 app.use(cors(corsOptions))
-server.applyMiddleware({ app, path: '/graphql' })
+  */
+app.use(cookieParser())
+server.applyMiddleware({
+  app,
+  cors: {
+    credentials: true,
+    origin: true,
+  },
+  path: '/graphql' 
+})
 app.listen({ port: 4000 }, () => {
   console.log(`🚀 Gateway Server Ready`)
 })
