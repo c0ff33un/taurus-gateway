@@ -45,7 +45,7 @@ const server = new ApolloServer({
   gateway,
   subscriptions: false,
   context: (requestContext: any) => {
-    //console.log('[Gateway] cookies:', requestContext.req.cookies)
+    console.log('[Gateway] cookies:', requestContext.req.cookies)
     return { token: requestContext.req.cookies.token }
   },
   plugins: [{

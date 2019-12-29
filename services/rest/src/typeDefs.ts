@@ -49,17 +49,17 @@ input GridInput {
   cols: Int
 }
 
+type Login {
+  token: String
+  player: Player
+}
+
 type Query {
   me: Player
   message: String
   user: Player
   users: [Player]
   grid(settings: GridInput): Grid
-}
-
-type Login {
-  token: String
-  player: Player
 }
 
 type Mutation {
