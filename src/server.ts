@@ -40,12 +40,12 @@ const gateway = new ApolloGateway({
   },
 })
 
-const unAuthenticated = ['login', 'signup', 'confirmAccount', 'resendAccountConfirmation', 'guest' ]
+const unAuthenticated = ['login', 'signup', 'confirmAccount', 'resendAccountConfirmation', 'guest', '__schema' ]
 const server = new ApolloServer({
   gateway,
   subscriptions: false,
   context: (requestContext: any) => {
-    console.log('[Gateway] cookies:', requestContext.req.cookies)
+    //console.log('[Gateway] cookies:', requestContext.req.cookies)
     return { token: requestContext.req.cookies.token }
   },
   plugins: [{
@@ -64,15 +64,17 @@ const server = new ApolloServer({
             throw new AuthenticationError("Must be logged in")
           }
         },
-        willSendResponse(requestContext: any): void {
+        willSendResponse(requestContext): void {
           const context = requestContext.context
           if (context.login) {
             const { token } = context
             const expire = new Date(Date.now())
             expire.setDate(expire.getDate() + 7)
             console.log('Setting cookie: token=${token};' )
-
-            requestContext.response.http.headers.set('Set-Cookie', `token=${token};`)
+            const resHttp = requestContext.response.http
+            if (resHttp) {
+              resHttp.headers.set('Set-Cookie', `token=${token};`)
+            }
           }
         }
       }

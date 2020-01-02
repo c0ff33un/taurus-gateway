@@ -1,47 +1,61 @@
 import express from 'express'
 import server from './server'
-const cors = require('cors')
-const proxy = require('http-proxy-middleware')
-const cookieParser = require('cookie-parser')
+import cors from 'cors'
+import proxy from 'http-proxy-middleware'
+import cookieParser from 'cookie-parser'
+
+const auth = (req: any): void => {
+  const token = req.cookies.token
+  console.log('token: ', token)
+  if (token) {
+    req.headers.authorization = token
+  }
+}
 
 const app = express()
 app.use(cookieParser())
-
-// This was setting cors for OPTIONS but not for the actual response ¯\_(ツ)_/¯ thus not setting cookies
-const corsOptions = {
-  origin: 'http://localhost:3000', // origin : true also doesnt set cookies ¯\_(ツ)_/¯
-  credentials: true,
-}
-app.use(cors(corsOptions))
-
 // Authentication Middleware to-do
-app.use(function(req, _res, next) {
-  console.log('the cookies: @@@@@: \n', req.cookies)
+app.use(function(req, res, next) {
+  console.log('auth middleware ', req.cookies)
+  auth(req)
   
-  //req.set('Authorization', )
-  //console.log('headers', req.headers)
-  console.log('authentication middleware')
+  console.log(req.headers)
   next()
 })
 
-app.use('/ws/:id',
-  function(req, res, next) {
-    console.log('forwarding websocket request', req.originalUrl)
-    console.log('to: ', process.env.GAME_URL)
-    next()
-  },
-  proxy({ target: process.env.GAME_URL, ws: true }) // need ws:// 
-)
+// This was setting cors for OPTIONS but not for the actual response ¯\_(ツ)_/¯ thus not setting cookies
+const DOMAIN = process.env.DOMAIN
+const corsOptions = {
+  origin: DOMAIN, // origin : true also doesnt set cookies ¯\_(ツ)_/¯
+  credentials: true,
+}
+
+app.use(cors(corsOptions))
+
+app.use('/ws/:id', proxy({ target: process.env.GAME_URL, ws: true, logLevel: 'debug' }))
 
 server.applyMiddleware({
   app,
   cors: {
     credentials: true,
-    origin: 'http://localhost:3000',
+    origin: DOMAIN,
   },
   path: '/graphql' 
 })
 
-app.listen(4000, () => {
-  console.log(`🚀 Gateway Server Ready`)
+// HMR doesnt work well with this, use own CRA proxy config
+/*if (process.env.PROXY_WEB) {
+  const WEB_URL = process.env.WEB_URL
+  if (WEB_URL) {
+    const wsURL = 'ws://' + WEB_URL.substring(7,WEB_URL.length)
+    console.log('Proxying wsURL', wsURL)
+    app.use('/socksjs-node', proxy({ target: wsURL, ws: true }))
+  }
+  app.use('/', proxy({ target: WEB_URL }))
+}*/
+
+const PORT = process.env.PORT || 4000
+
+app.listen(PORT, () => {
+  console.log(`🚀 Gateway Server Ready at ${PORT}`)
 })
